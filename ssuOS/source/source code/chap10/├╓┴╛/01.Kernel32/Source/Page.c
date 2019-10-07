@@ -16,6 +16,9 @@ void kInitializePageTables( void )
 	PML4TENTRY* pstPML4TEntry;
 	PDPTENTRY* pstPDPTEntry;
 	PDENTRY* pstPDEntry;
+	//
+	PTENTRY* pstPTEntry;
+	//
 	DWORD dwMappingAddress;
 	int i;
 
@@ -28,6 +31,7 @@ void kInitializePageTables( void )
 	{
 		kSetPageEntryData( &( pstPML4TEntry[ i ] ), 0, 0, 0, 0 );
 	}
+	
 	
 	// 페이지 디렉터리 포인터 테이블 생성
 	// 하나의 PDPT로 512GByte까지 매핑 가능하므로 하나로 충분함
@@ -42,7 +46,7 @@ void kInitializePageTables( void )
 	{
 		kSetPageEntryData( &( pstPDPTEntry[ i ] ), 0, 0, 0, 0 );
 	}
-	
+
 	// 페이지 디렉터리 테이블 생성
 	// 하나의 페이지 디렉터리가 1GByte까지 매핑 가능 
 	// 여유있게 64개의 페이지 디렉터리를 생성하여 총 64GB까지 지원
@@ -57,6 +61,18 @@ void kInitializePageTables( void )
 				PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS, 0 );
 		dwMappingAddress += PAGE_DEFAULTSIZE;
 	}	
+
+	// 엔트리 자료구조 : 8바이트, &(Entry[i]) -> 8바이트씩 증가
+	pstPTEntry = (PTENTRY*) 0x142000;
+
+	//0x1FF000,0x1FF000 :: 21bits 
+	//2개의 페이지 테이블 엔트리 생성, 물리주소 0x142000 테이블 엔트리가 실제 주소 1FF000을 매핑함(?)
+	//PAGE_FLAGS_P :: 페이지 사이즈 비트가 0이고 (4kb 페이지), RW 비트가 0 (ReadOnly)
+
+	kSetPageEntryData( &( pstPTEntry[ 0 ] ), 0x00, 0x1FF000, PAGE_FLAGS_P, 0 );
+	kSetPageEntryData( &( pstPTEntry[ 1 ] ), 0x00, 0x1FE000, PAGE_FLAGS_DEFAULT, 0 );
+	
+	
 }
 
 /**
