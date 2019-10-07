@@ -79,6 +79,6 @@ void MemoryReadOnlyCheck ( DWORD* pdwCurrentAddress ){
         pdwCurrentAddress++;
     }
 
-	return true;
+	return TRUE;
 }
 

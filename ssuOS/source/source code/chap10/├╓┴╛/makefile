@@ -67,6 +67,9 @@ Utility:
 	@echo =========== Utility Build Complete ===========
 	@echo 
 	
+
+run:
+	qemu-system-x86_64 -L . -fda Disk.img -m 64 -localtime -M pc
 	
 # 소스 파일을 제외한 나머지 파일 정리	
 clean:
@@ -75,3 +78,4 @@ clean:
 	make -C 02.Kernel64 clean
 	make -C 04.Utility clean
 	rm -f Disk.img	
+	rm -f ImageMaker.exe
