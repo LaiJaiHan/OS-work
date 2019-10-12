@@ -37,6 +37,10 @@
 #define PAGE_MAXENTRYCOUNT 	512
 #define PAGE_DEFAULTSIZE	0x200000
 
+#define PAGE_SIZE_4KB 		0x1000
+#define PAGE_FLAGS_RDONLY	( PAGE_FLAGS_P | 0 )
+#define PAGE_FLAGS_PS4 		0x00000000 
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // ±¸Á¶Ã¼

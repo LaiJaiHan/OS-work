@@ -16,9 +16,7 @@ void kInitializePageTables( void )
 	PML4TENTRY* pstPML4TEntry;
 	PDPTENTRY* pstPDPTEntry;
 	PDENTRY* pstPDEntry;
-	//
-	PTENTRY* pstPTEntry;
-	//
+	PTENTRY* pstP4TEntry;
 	DWORD dwMappingAddress;
 	int i;
 
@@ -42,7 +40,11 @@ void kInitializePageTables( void )
 		kSetPageEntryData( &( pstPDPTEntry[ i ] ), 0, 0x102000 + ( i * PAGE_TABLESIZE ), 
 				PAGE_FLAGS_DEFAULT, 0 );
 	}
-	for( i = 64 ; i < PAGE_MAXENTRYCOUNT ; i++ )
+
+	kSetPageEntryData( &( pstPDPTEntry[ 64 ] ), 0, 0x142000, 
+				PAGE_FLAGS_DEFAULT, 0 );
+
+	for( i = 65 ; i < PAGE_MAXENTRYCOUNT ; i++ )
 	{
 		kSetPageEntryData( &( pstPDPTEntry[ i ] ), 0, 0, 0, 0 );
 	}
@@ -51,27 +53,35 @@ void kInitializePageTables( void )
 	// 하나의 페이지 디렉터리가 1GByte까지 매핑 가능 
 	// 여유있게 64개의 페이지 디렉터리를 생성하여 총 64GB까지 지원
 	pstPDEntry = ( PDENTRY* ) 0x102000;
-	dwMappingAddress = 0;
+	dwMappingAddress = 0x00;
+	
 	for( i = 0 ; i < PAGE_MAXENTRYCOUNT * 64 ; i++ )
 	{
 		// 32비트로는 상위 어드레스를 표현할 수 없으므로, Mbyte 단위로 계산한 다음
 		// 최종 결과를 다시 4Kbyte로 나누어 32비트 이상의 어드레스를 계산함
+
 		kSetPageEntryData( &( pstPDEntry[ i ] ), 
 				( i * ( PAGE_DEFAULTSIZE >> 20 ) ) >> 12, dwMappingAddress, 
 				PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS, 0 );
 		dwMappingAddress += PAGE_DEFAULTSIZE;
 	}	
 
-	// 엔트리 자료구조 : 8바이트, &(Entry[i]) -> 8바이트씩 증가
-	pstPTEntry = (PTENTRY*) 0x142000;
+	pstP4TEntry = (PTENTRY*) 0x142000;
 
-	//0x1FF000,0x1FF000 :: 21bits 
-	//2개의 페이지 테이블 엔트리 생성, 물리주소 0x142000 테이블 엔트리가 실제 주소 1FF000을 매핑함(?)
-	//PAGE_FLAGS_P :: 페이지 사이즈 비트가 0이고 (4kb 페이지), RW 비트가 0 (ReadOnly)
+	dwMappingAddress = 0x0;
 
-	kSetPageEntryData( &( pstPTEntry[ 0 ] ), 0x00, 0x1FF000, PAGE_FLAGS_P, 0 );
-	kSetPageEntryData( &( pstPTEntry[ 1 ] ), 0x00, 0x1FE000, PAGE_FLAGS_DEFAULT, 0 );
+	for ( i = 0 ; i< PAGE_MAXENTRYCOUNT ; i++ )
+	{
+		kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, 					PAGE_FLAGS_RDONLY | PAGE_FLAGS_PS4, 0);
+		dwMappingAddress += PAGE_SIZE_4KB;
 	
+		if ( i == 511) 
+		{ 
+			kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, 				PAGE_FLAGS_RDONLY | PAGE_FLAGS_PS4, 0);
+			dwMappingAddress += PAGE_SIZE_4KB;
+		}
+
+	}
 	
 }
 
