@@ -16,29 +16,31 @@ void kPrintString( int iX, int iY, const char* pcString );
  */
 void Main( void )
 {
+	kPrintString(0,10,"Switch To IA-32e Mode Success~!!");
+    kPrintString(0,11,"IA-32e C Language Kernel Start.........[Pass]");
     
 
 	if( MemoryReadOnlyCheck( (DWORD*) 0x1FE000 ) == TRUE ) {
 
-		 kPrintString( 0, 8, "Read from 0x1fe000 [Ok]" );
-		 kPrintString( 0, 9, "Write from 0x1fe000 [Ok]" );
+		 kPrintString( 0, 12, "Read from 0x1fe000 [Ok]" );
+		 kPrintString( 0, 13, "Write from 0x1fe000 [Ok]" );
 
 	}
 	else {
 
-		kPrintString( 45,10, "0x1fe000 is ReadOnly" );
+		kPrintString( 0,12, "0x1fe000 is ReadOnly" );
 	
 	}
 
 	if( MemoryReadOnlyCheck( (DWORD*) 0x1FF000 ) == FALSE) { 
 
-		kPrintString( 0, 10, "Read from 0x1ff000 [Ok]" );
+		kPrintString( 0, 14, "Read from 0x1ff000 [Ok]" );
 	
 	}
 
 	else {
 
-		kPrintString( 0, 11, "0x1ff000 is ReadWrite" );
+		kPrintString( 0, 14, "0x1ff000 is ReadWrite" );
 	
 	}
 

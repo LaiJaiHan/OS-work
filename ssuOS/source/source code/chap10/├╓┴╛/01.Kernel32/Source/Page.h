@@ -37,9 +37,10 @@
 #define PAGE_MAXENTRYCOUNT 	512
 #define PAGE_DEFAULTSIZE	0x200000
 
-#define PAGE_SIZE_4KB 		0x1000
-#define PAGE_FLAGS_RDONLY	( PAGE_FLAGS_P | 0 )
-#define PAGE_FLAGS_PS4 		0x00000000 
+
+#define PAGE_SIZE_4KB 		0x1000 //4kb 사이즈
+#define PAGE_FLAGS_RDONLY	( PAGE_FLAGS_P | 0 ) // 페이지의 권한을 Read-only로 설정하려면 RW필드의 비트를 0으로 바꿔줘야함
+#define PAGE_FLAGS_PS4 		0x00000000 //페이지 사이즈를 4kb로 설정하려면 PS필드의 비트를 0으로 바꿔줘야함
 
 ////////////////////////////////////////////////////////////////////////////////
 //

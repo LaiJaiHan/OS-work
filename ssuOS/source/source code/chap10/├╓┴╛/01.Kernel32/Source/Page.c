@@ -41,6 +41,9 @@ void kInitializePageTables( void )
 				PAGE_FLAGS_DEFAULT, 0 );
 	}
 
+
+	// 페이지 디렉터리 포인터 테이블의 엔트리 중 하나가 새로 생성한 4kb 페이지 사이즈 페이지 테이블을
+	// 가리키게함
 	kSetPageEntryData( &( pstPDPTEntry[ 64 ] ), 0, 0x142000, 
 				PAGE_FLAGS_DEFAULT, 0 );
 
@@ -64,20 +67,27 @@ void kInitializePageTables( void )
 				( i * ( PAGE_DEFAULTSIZE >> 20 ) ) >> 12, dwMappingAddress, 
 				PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS, 0 );
 		dwMappingAddress += PAGE_DEFAULTSIZE;
+
+
+
 	}	
 
+
+	// 페이지 사이즈가 4KB인 페이지 디렉터리 테이블 생성 
 	pstP4TEntry = (PTENTRY*) 0x142000;
 
 	dwMappingAddress = 0x0;
 
 	for ( i = 0 ; i< PAGE_MAXENTRYCOUNT ; i++ )
 	{
-		kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, 					PAGE_FLAGS_RDONLY | PAGE_FLAGS_PS4, 0);
+		kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_PS4, 0);
 		dwMappingAddress += PAGE_SIZE_4KB;
-	
+		
+
+		// 목표인 0x1ff000 ~ 0x20000 주소를 쓸 수 없게끔 비트 설정.
 		if ( i == 511) 
 		{ 
-			kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, 				PAGE_FLAGS_RDONLY | PAGE_FLAGS_PS4, 0);
+			kSetPageEntryData( &( pstP4TEntry[i] ), 0x00, dwMappingAddress, PAGE_FLAGS_RDONLY | PAGE_FLAGS_PS4, 0);
 			dwMappingAddress += PAGE_SIZE_4KB;
 		}
 
